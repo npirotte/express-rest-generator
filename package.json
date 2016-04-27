@@ -6,11 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Anders D. Johnson",
+  "author": "N. Pirotte",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "http://github.com/adjohnson916/express-rest-resource.git"
+    "url": "http://github.com/npirotte/express-rest-generator.git"
   },
   "dependencies": {
     "express": "^4.0.0",
