@@ -48,6 +48,11 @@ class Resource {
           this.options.error(err)
           return res.status(500).end()
         }
+
+        if (this.options.beforeSend) {
+          docs = docs.map(this.options.beforeSend)
+        }
+
         res.json(docs)
       })
     }
@@ -68,6 +73,11 @@ class Resource {
           res.status(404).end()
           return
         }
+
+        if (this.options.beforeSend) {
+          doc = this.options.beforeSend(doc)
+        }
+
         res.json(doc)
       })
     }
@@ -80,11 +90,20 @@ class Resource {
 
       var doc = req.body
 
-      this.options.db().insert(doc, function (err, newDoc) {
+      if (this.options.beforeInsert) {
+        doc = this.options.beforeInsert(doc)
+      }
+
+      this.options.db().insert(doc, (err, newDoc) => {
         if (err) {
           this.options.error(err)
           return res.status(500).end()
         }
+
+        if (this.options.beforeSend) {
+          newDoc = this.options.beforeSend(newDoc)
+        }
+
         res.status(201).json(newDoc)
       })
     }
@@ -97,6 +116,10 @@ class Resource {
 
       var id = req.params.id
       var doc = req.body
+
+      if (this.options.beforeInsert) {
+        doc = this.options.beforeInsert(doc)
+      }
 
       var query = {
         _id: id

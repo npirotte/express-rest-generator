@@ -2,7 +2,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const Resource = require('./libs/Resource.js')
-const restDefinition = require('./libs/restDefinition.s')
+const restDefinition = require('./libs/restDefinition.js')
 
 module.exports = function (options) {
   const router = express.Router()
@@ -10,8 +10,9 @@ module.exports = function (options) {
 
   router.use(bodyParser.json())
 
-  restDefinition.forEach(function (route) {
-    router[route.method](route.path, resource[route.method]())
+  Object.keys(restDefinition).forEach((routeName) => {
+    const route = restDefinition[routeName]
+    router[route.method](route.path, resource[routeName]())
   })
 
   return router
