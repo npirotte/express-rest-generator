@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/npirotte/express-rest-generator.svg?branch=master)](https://travis-ci.org/npirotte/express-rest-generator)
+
 # express-rest-resource
 
 An [express] 4+ `Router` representing a RESTful resource as JSON.
