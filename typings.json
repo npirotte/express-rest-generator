@@ -1,0 +1,13 @@
+{
+  "name": "express-rest-generator",
+  "version": false,
+  "dependencies": {},
+  "ambientDependencies": {
+    "body-parser": "registry:dt/body-parser#0.0.0+20160317120654",
+    "express": "registry:dt/express#4.0.0+20160317120654",
+    "express-serve-static-core": "registry:dt/express-serve-static-core#0.0.0+20160322035842",
+    "nedb": "registry:dt/nedb#0.0.0+20160505185910",
+    "node": "registry:dt/node#4.0.0+20160509154515",
+    "serve-static": "registry:dt/serve-static#0.0.0+20160501131543"
+  }
+}

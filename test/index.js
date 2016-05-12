@@ -49,14 +49,14 @@ describe('Routing', function () {
         const wantedNumberOfUsers = 2
         utilities.createRecords((user) => {
           request(app)
-              .get('/api/person/')
-              .expect('Content-Type', /json/)
-              .expect((res) => {
-                if (!res.body.length === wantedNumberOfUsers) {
-                  throw new Error(`Got ${res.body.length} element, want ${wantedNumberOfUsers}`)
-                }
-              })
-              .end(done)
+            .get('/api/person/')
+            .expect('Content-Type', /json/)
+            .expect((res) => {
+              if (!res.body.length === wantedNumberOfUsers) {
+                throw new Error(`Got ${res.body.length} element, want ${wantedNumberOfUsers}`)
+              }
+            })
+            .end(done)
         }, wantedNumberOfUsers)
       })
     })

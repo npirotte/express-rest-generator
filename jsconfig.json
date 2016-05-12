@@ -10,6 +10,8 @@
 		"bower_components",
 		"jspm_packages",
 		"tmp",
-		"temp"
+		"temp",
+		"typings/browser.d.ts",
+		"typings/browser"
 	]
 }

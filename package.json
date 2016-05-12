@@ -14,8 +14,9 @@
     "url": "http://github.com/npirotte/express-rest-generator.git"
   },
   "dependencies": {
+    "body-parser": "^1.6.7",
     "express": "^4.0.0",
-    "body-parser": "^1.6.7"
+    "nedb": "^1.8.0"
   },
   "devDependencies": {
     "eslint": "^2.8.0",
@@ -26,5 +27,7 @@
     "nedb": "^1.8.0",
     "supertest": "^1.2.0"
   },
-  "engines" : { "node" : ">=6.0" }
+  "engines": {
+    "node": ">=6.0"
+  }
 }
