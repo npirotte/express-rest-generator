@@ -1,115 +1,78 @@
-/* global describe it */
+/* global describe it beforeEach */
 
 const request = require('supertest')
 const app = require('./server.js')
+const utilities = require('./testUtilities.js')
 
-/* ==== Utilities ==== */
-
-/**
- * Populate the database with a given number of users
- * @param {Function} cb - the callback to execute at the end. Pass the last created user as parametter.
- * @param {number} wanted - the number of users to create. Default to 1.
- */
-function createUsers (cb, wanted = 1) {
-  request(app)
-    .post('/api/person/')
-    .send({'name': 'Nicolas Pirotte'})
-    .end((err, res) => {
-      if (err) throw err
-
-      if (--wanted > 0) {
-        createUsers(cb, wanted)
-      } else {
-        cb(res.body)
-      }
-    })
-}
-
-describe('Routing', () => {
-  describe('List', () => {
-    it('Should respond an empty array', (done) => {
-      request(app)
-        .get('/api/person/')
-        .expect('Content-Type', /json/)
-        .expect(200)
-        .expect((res) => {
-          return res.body === []
-        })
-        .end(function (err, res) {
-          if (err) throw err
-          done()
-        })
-    })
-  })
-
-  describe('Post', () => {
-    it('Should add a person with id, createdOn and modifiedOn attributes', (done) => {
-      request(app)
-        .post('/api/person')
-        .send({'name': 'Nicolas Pirotte'})
-        .expect(201)
-        .expect((res) => {
-          return res.body.name === 'Nicolas Pirotte'
-        })
-        .expect((res) => {
-          return /[a-zA-Z0-9]+/.test(res.body.id)
-        })
-        .expect((res) => {
-          const now = new Date()
-          return res.body.createdOn === now && res.body.modifiedOn === now
-        })
-        .end(done)
-    })
-
-    it('Should record the created element in the database', (done) => {
-      const wantedNumberOfUsers = 2
-      createUsers((user) => {
+describe('Routing', function () {
+  describe('Global endpoint (/slug/)', function () {
+    describe('List', function () {
+      it('Should respond an empty array', function (done) {
         request(app)
-            .get('/api/person/')
-            .expect('Content-Type', /json/)
-            .expect((res) => {
-              return res.body.length === wantedNumberOfUsers
-            })
-            .end(function (err, res) {
-              if (err) throw err
-              done()
-            })
-      }, wantedNumberOfUsers)
+          .get('/api/person/')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .expect((res) => {
+            return res.body === []
+          })
+          .end(done)
+      })
     })
-  })
 
-  describe('Put', () => {
-    it('Should update a record', (done) => {
-      createUsers((user) => {
-        const id = user.id
+    describe('Post', function () {
+      it('Should add a person with id, createdOn and modifiedOn attributes', function (done) {
         request(app)
-          .put('/api/person/' + id)
-          .send({name: 'Benjamin'})
-          .expect(204)
-          .end(function (err, res) {
-            if (err) throw err
+          .post('/api/person')
+          .send({'name': 'Nicolas Pirotte'})
+          .expect(201)
+          .expect((res) => {
+            if (res.body.name !== 'Nicolas Pirotte') {
+              throw new Error(`Got ${res.body.name} name, want ${'Nicolas Pirotte'}`)
+            }
+          })
+          .expect((res) => {
+            if (!/[a-zA-Z0-9]+/.test(res.body.id)) {
+              throw new Error(`Got ${res.body.id} id, not a valid id.`)
+            }
+          })
+          .expect((res) => {
+            if (typeof new Date(res.body.createdAt).valueOf() !== 'number' ||
+                typeof new Date(res.body.updatedAt).valueOf() !== 'number' ||
+                res.body.createdAt !== res.body.updatedAt) {
+              throw new Error(`Got ${res.body.createdAt} and ${res.body.updatedAt}, not valid dates`)
+            }
+          })
+          .end(done)
+      })
 
-            request(app)
+      it('Should record the created element in the database', function (done) {
+        const wantedNumberOfUsers = 2
+        utilities.createRecords((user) => {
+          request(app)
               .get('/api/person/')
               .expect('Content-Type', /json/)
               .expect((res) => {
-                return res.body[0].name === 'Benjamin'
+                if (!res.body.length === wantedNumberOfUsers) {
+                  throw new Error(`Got ${res.body.length} element, want ${wantedNumberOfUsers}`)
+                }
               })
-              .expect((res) => {
-                return res.body[0].updatedOn === new Date()
-              })
-              .end(function (err, res) {
-                if (err) throw err
-                done()
-              })
-          })
+              .end(done)
+        }, wantedNumberOfUsers)
       })
     })
   })
 
-  describe('Get', () => {
-    it('Should find a user by his id', (done) => {
-      createUsers((user) => {
+  describe('Item end point (/slug/:id)', function () {
+    let user
+    beforeEach('Create 2 records', function (done) {
+      utilities.createRecords((newUser) => {
+        user = newUser
+        done()
+      }, 2)
+    })
+
+    describe('Get', function () {
+      it('Should find a record by his id', function (done) {
         const id = user.id
         request(app)
           .get('/api/person/' + id)
@@ -118,31 +81,57 @@ describe('Routing', () => {
             return res.body.d === id
           })
           .end(done)
-      }, 2)
+      })
     })
-  })
 
-  describe('Delete', () => {
-    it('Should delete a user by his id', (done) => {
-      createUsers((user) => {
+    describe('Put', function () {
+      beforeEach(function (done) {
+        const id = user.id
+        request(app)
+          .put('/api/person/' + id)
+          .send({name: 'Benjamin'})
+          .expect(204)
+          .end(done)
+      })
+
+      it('Should update a record', function (done) {
+        const id = user.id
+        request(app)
+          .get('/api/person/' + id)
+          .expect((res) => {
+            return res.body.updatedOn === new Date()
+          })
+          .end(done)
+      })
+
+      it('Should set the updatedAt to the current timestamp', function (done) {
+        const id = user.id
+        request(app)
+          .get('/api/person/' + id)
+          .expect((res) => {
+            if (res.body.updatedAt === res.body.createdAt || !res.body.updatedAt || !res.body.createdAt) {
+              throw new Error('CreatedAd not updated !')
+            }
+          })
+          .end(done)
+      })
+    })
+
+    describe('Delete', function () {
+      beforeEach(function (done) {
         const id = user.id
         request(app)
           .delete('/api/person/' + id)
           .expect(204)
-          .end((err, res) => {
-            if (err) throw err
+          .end(done)
+      })
 
-            request(app)
-              .get('/api/person')
-              .expect((res) => {
-                return res.body.length === 1
-              })
-              .end((err, res) => {
-                if (err) throw err
-                done()
-              })
-          })
-      }, 2)
+      it('Should delete a record by his id', function (done) {
+        const id = user.id
+        request(app)
+          .get('/api/person/' + id)
+          .expect(404, done)
+      })
     })
   })
 })
