@@ -4,7 +4,8 @@
   "description": "RESTful routes for JSON resources, BYODB",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha",
+    "start": "node ./example.js"
   },
   "author": "N. Pirotte",
   "license": "MIT",
@@ -19,7 +20,10 @@
   "devDependencies": {
     "eslint": "^2.8.0",
     "eslint-config-standard": "^5.2.0",
+    "eslint-plugin-promise": "^1.1.0",
     "eslint-plugin-standard": "^1.3.2",
-    "nedb": "^1.8.0"
+    "mocha": "^2.4.5",
+    "nedb": "^1.8.0",
+    "supertest": "^1.2.0"
   }
 }

@@ -1,5 +1,5 @@
 const express = require('express')
-const expressRestResource = require('../index.js')
+const expressRestResource = require('./index.js')
 const nedb = require('nedb')
 
 const PORT = 8080
@@ -25,8 +25,8 @@ const config = {
 
 app.use('/api/person', expressRestResource(config))
 
-/* app.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Backend server listening to port ${PORT}`)
-}) */
+})
 
 module.exports = app
