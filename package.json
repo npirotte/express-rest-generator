@@ -1,6 +1,6 @@
 {
   "name": "express-rest-generator",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "RESTful routes for JSON resources, BYODB",
   "main": "index.js",
   "scripts": {
